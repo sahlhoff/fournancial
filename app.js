@@ -109,8 +109,6 @@ require('./routes')(app);
 
 var port = process.env.PORT || 3000;
 
-http.createServer(app).listen(port, '127.0.0.1', function() {
-    console.log("Express server listening on %s:%d in %s mode", '127.0.0.1', port, app.settings.env);
-});
+http.createServer(app).listen(port);
 
 
