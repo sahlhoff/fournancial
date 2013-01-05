@@ -9,7 +9,7 @@
 	</head>
 	<body>
 	<div class="navbar navbar-fixed-top">
-	   <div class="navbar-inner">
+	    <div class="navbar-inner">
 	     <div class="container">
 	       <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
 	         <span class="icon-bar"></span>
@@ -17,19 +17,12 @@
 	         <span class="icon-bar"></span>
 	       </a>
 	       <a class="brand" href="../">Fournancial</a>
-	        </ul>
 	       </div>
 	     </div>
-	   </div>
-	 </div>
-	<div class = "row">
-		<div class="span4 offset4">
-	        
-    	</div>
-	</div>	
+	</div>
 	<div class = "row">
 		<div class = "span8 offset2">
- 			<form action="" class="form-horizonatal well" method="POST" id="account-form-signup">
+ 			<form action="" class="form-horizonatal well extrapaddingbottom" method="POST" id="account-form-signup">
  			<legend><h4>Sign up to save mad cash!</h4></legend>
             <div class = "row">
             	<p class="help-block bankinfo" style="padding-left:20px;">Use the same credentials as you do for online banking</p>
@@ -49,46 +42,66 @@
 			        </div>   
 		        </div>  
             </div>
+
             <legend><h4>Banking Information</h4></legend>
-                <label>FID</label>
-                <input type="text" name="fid" autocomplete="off" class="required" />
-
-                <label>FIDORG</label>
-                <input type="text" name="fidorg" autocomplete="off" class="required" />
-
-
-                <label>Bank Id</label>
-                <input type="text" name="bankid" autocomplete="off"/>
-
-				<label>Bank OFX url</label>
-				<input type="text" name="url" autocomplete="off"/>
-
-                <label>Account Id</label>
-                <input type="text" name="accid" autocomplete="off" class="required" />
-
-	            <div class="control-group">
+                
+        	<div class="control-group">
 	            <label class="control-label" name="acctype" for="acctype">Account Type</label>
 	            <div class="controls">
 	              <select id="acctype" name="acctype">
-	                <option value="CHECKING">Checking</option>
-	                <option value="SAVINGS">Savings</option>
-	                <option value="MONEYMRKT">Money Market</option>
-	                <option value="CREDITCARD">Credit Card</option>
+	                <option id="checking" value="CHECKING">Checking</option>
+	                <option id="savings" value="SAVINGS">Savings</option>
+	                <option id="moneymrkt" value="MONEYMRKT">Money Market</option>
+	                <option id="creditcard" value="CREDITCARD">Credit Card</option>
 	              </select>
 	            </div>
-	          </div>
-            
+          	</div>
 
-            <button type="submit" name="submit-button">Submit</button>
-            <span class="payment-errors"></span>
-        <div class = "span6"></div>
+            <label>FID</label>
+            <input type="text" name="fid" autocomplete="off" class="required" />
+
+            <label>FIDORG</label>
+            <input type="text" name="fidorg" autocomplete="off" class="required" />
+
+			<label>Bank OFX url</label>
+			<input type="text" name="url" autocomplete="off"/>
+
+            <label>Account Id</label>
+            <input type="text" name="accid" autocomplete="off" class="required" />
+
+            <span id="bankid">
+            <label>Bank Id</label>
+            <input type="text" name="bankid" autocomplete="off"/>
+        	</span>
+           
+        
+        	<div class ="span2 offset6 extrapaddingbottom">
+	            <button type="submit" name="submit-button">Submit</button>
+	            <span class="payment-errors"></span>
+        	</div>
+
+        </form>
         </div>
         </div>
       	</div>
 	</body>
+
 	    <script type="text/javascript">
             $(document).ready(function() {
             	$("#account-form-signup").validate();
+
+			$("#acctype").change(function() {
+			if($(this).val() == 'CREDITCARD'){
+				$('#bankid').hide();
+			}
+			else
+				$('#bankid').show();
+			});
+
+			function submit(form) {
+				console.log('in tha form')
+			};
+
             });
 	    </script>
 </html>

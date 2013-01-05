@@ -80,6 +80,13 @@ module.exports = function (app) {
 	app.post('/create',  function (req, res) {
 		console.log(req.body);
 		user = req.body
+
+		if(user.bankid.length === 0){
+			console.log('before = ' + user.bankid);
+			user.bankid = null;
+			console.log('after = ' + user.bankid);
+		}
+
 		var bankInfo = {
 		      fid: user.fid
 			, fidorg: user.fidorg
