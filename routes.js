@@ -1,5 +1,7 @@
 var passport = require('passport');
 var banking = require('banking');
+var qif2json = require('qif2json');
+var fs = require('fs');
 
 /*
 var sankInfo = {
@@ -78,39 +80,24 @@ module.exports = function (app) {
 	});
 
 	app.post('/create',  function (req, res) {
-		console.log(req.body);
 		user = req.body
 
-		if(user.bankid.length === 0){
-			console.log('before = ' + user.bankid);
-			user.bankid = null;
-			console.log('after = ' + user.bankid);
-		}
-
-		var bankInfo = {
-		      fid: user.fid
-			, fidorg: user.fidorg
-			, url: user.url
-			, bankid: user.bankid
-			, user: user.handle
+		var myUser = {
+			  user: user.handle
 			, pass: user.password1
-			, accid: user.accid
 			, acctype: user.acctype
-			, date_start: 20121025 
-			, date_end: 20121231 
+
 		}
-		//var bankstatement = getBank(bankInfo);
 
-		banking.getStatement(bankInfo, 'json', function(data, err){
-			if(err) console.log(err)
-			console.log(data);   
 
-			data = JSON.stringify(data, null, 2);
 
-		 	res.render('account', {bank: data});   
-		});
+		qif2json.parseFile(__dirname + req.files.QIF.path, function(err, data){
+			if(err) console.log('err in this\n\n' + err + '\n\n')	
+			console.log(data)
+		});				
 
 		
+		res.render('account', {user: myUser});
 	});
 
 }
