@@ -107,8 +107,10 @@ mongoose.connect('mongodb://localhost/fournancial');
 // Setup routes
 require('./routes')(app);
 
-http.createServer(app).listen(3000, '127.0.0.1', function() {
-    console.log("Express server listening on %s:%d in %s mode", '127.0.0.1', 3000, app.settings.env);
+var port = process.env.PORT || 3000;
+
+http.createServer(app).listen(port, '127.0.0.1', function() {
+    console.log("Express server listening on %s:%d in %s mode", '127.0.0.1', port, app.settings.env);
 });
 
 
