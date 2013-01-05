@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node app"
   },
-  "dependencies": {
+  "devDependencies": {
       "express": "3.0.4"
     , "ejs": "*"
     , "banking": "0.2.2"
