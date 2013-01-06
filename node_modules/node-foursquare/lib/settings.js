@@ -1,15 +1,13 @@
+var path = require('path');
+
 /**
  * A module for retrieving information about Settings from Foursquare.
  * @module node-foursquare/Settings
  * @param {Object} config A valid configuration.
  */
 module.exports = function(config) {
-  var core = require("./core")(config),
-    path = require("path"),
-    log4js = require("log4js");
-
-  log4js.configure(config.log4js);
-  var logger = log4js.getLogger("node-foursquare.Settings");
+  var core = require('./core')(config),
+    logger = core.getLogger('settings');
 
   /**
    * Retreive Foursquare settings for the current user.
@@ -19,8 +17,8 @@ module.exports = function(config) {
    * @see https://developer.foursquare.com/docs/settings/all.html
    */
   function getSettings(accessToken, callback) {
-    logger.debug("ENTERING: Settings.getSettings");
-    core.callApi("/settings/all", accessToken, null, callback);
+    logger.enter('getSettings');
+    core.callApi('/settings/all', accessToken, null, callback);
   }
 
   /**
@@ -32,19 +30,20 @@ module.exports = function(config) {
    * @see https://developer.foursquare.com/docs/settings/all.html
    */
   function getSetting(name, accessToken, callback) {
-    logger.debug("ENTERING: Settings.getSetting");
+    logger.enter('getSetting');
 
     if (!name) {
-      logger.error("getSetting: name is required.");
-      callback(new Error("Settings.getSetting: name is required."));
+      logger.error('getSetting: name is required.');
+      callback(new Error('Settings.getSetting: name is required.'));
       return;
     }
 
-    core.callApi(path.join("/settings/", name), accessToken, null, callback);
+    logger.debug('getSetting:name: ' + name);
+    core.callApi(path.join('/settings/', name), accessToken, null, callback);
   }
 
   return {
-    "getSettings" : getSettings,
-    "getSetting" : getSetting
+    'getSetting' : getSetting,
+    'getSettings' : getSettings
   }
 };

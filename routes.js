@@ -1,56 +1,125 @@
-var passport = require('passport');
-var csv = require('csv');
-var fs = require('fs');
+var passport = require('passport')
+	, csv = require('csv')
+	, fs = require('fs')
+	, User = require('./models/user')
+	, config = require('./config')
+	, account = require('./models/account');
 
-/*
-var sankInfo = {
-    fid: 1601
-  , fidorg: 'Chase Bank'
-  , url: 'https://onlineofx.chase.com/chase.ofx'
-  , bankid: 074000010
-  , user: 'lucidcreations90'
-  , pass: 'Bremen321'
-  , accid: 000000904381415
-  , acctype: 'CHECKING'
-  , date_start: 20121025 
-  , date_end: 20121231 
-};
-*/
+
+	var config = {
+  'secrets' : {
+    'clientId' : config.secrets.clientId,
+    'clientSecret' : config.secrets.clientSecret,
+    'redirectUrl' : config.secrets.redirectUrl
+  }
+}
+
+var foursquare = require('node-foursquare')(config);
+
 
 
 module.exports = function (app) {
 
 	function ensureAuthenticated(req, res, next) {
 	  if (req.isAuthenticated()) { return next(); }
-	  res.redirect('/login')
+	  res.redirect('/')
+	}
+
+	function updateAccount(req, res, next){
+
+		console.log('in update')
+		console.log(req.session)
+
+
+		res.redirect('/account');
+		/*
+		var accessToken, userId;
+
+		User.findOne({ userId: user}, function (err, doc){
+			if(err){console.log(err)}
+			if(doc){
+				accessToken = doc.accessToken;
+				req.session.accessToken = accessToken;
+			}
+
+			console.log(req.session);
+
+
+			foursquare.Users.getCheckins(user, null, accessToken, function(err, data) {
+				if(err){console.log(err)}
+				else {
+				return(data);
+			}
+			});
+
+		});
+		
+		*/	
 	}
 
 
+
+
+/*========================= Account ==========================*/
+
+
+
 	app.get('/', function (req, res){
-	  res.render('index', { user: req.user });
+	  res.render('index', { layout: 'loginlayout' });
 	});
 
-/*
-	app.get('/banking', function (req, res) {
-		banking.getStatement(sankInfo, 'json', function(res, err){
-		if(err) console.log(err)
-		console.log(JSON.stringify(res, null, 2)); 
-		});
-	});
-*/
 
-	app.get('/account', function (req, res){
-		console.log('\n\n\n' + req.body + '\n\n\n')
-	  res.render('account', { user: req.body });
+
+
+
+
+
+	app.get('/account', ensureAuthenticated, function (req, res){
+
+		
+		console.log(req.session)
+		
+		res.render('account', { layout: 'layout' })
 	});
+
+
+
+
+
+
+
+
+/*=========================== Login ===============================*/
+
 
 	app.get('/login', function (req, res){
-	  res.render('login', { user: req.user });
+	  res.render('login', { 
+	  						 layout: 'loginlayout'
+	  					   });
 	});
 
-	app.post('/login', function (req, res) {
+	app.post('/login', passport.authenticate('local'), 
+		function(req, res) {
+			var accessToken;
 
+			User.findOne({ userId: req.user}, function (err, doc){
+			if(err){console.log(err)}
+			if(doc){
+				accessToken = doc.accessToken;
+				req.session.accessToken = accessToken;
+				req.session.userId = req.user;
+			}
+
+			updateAccount(req, res);
+		});
 	});
+
+
+
+
+
+/*======================== Auth =============================*/
+
 
 	app.get('/auth/foursquare', passport.authenticate('foursquare'),
 	  function(req, res){
@@ -69,64 +138,40 @@ module.exports = function (app) {
 	  res.redirect('/');
 	});
 
+
+
 //========================Create Account=====================//
 	
 
-
-
-	app.get('/create', function (req, res) {
-		res.render('create', {user: req.user})
+	app.get('/create', ensureAuthenticated, function (req, res) {
+		res.render('create', {
+								  user: req.user
+							})
 	});
 
 
-	app.post('/create',  function (req, res) {
+	app.post('/create', function (req, res) {
+		console.log(req);
 
-		user = req.body
+		var handle, password;
+
+		handle = req.body.handle;
+		pass = req.body.password1;
 
 
-		var myUser = {
-			  user: user.handle
-			, pass: user.password1
-			, acctype: user.acctype
+		User.findOne({ userId: req.user.id }, function (err, doc){
+		  doc.handle = handle;
+		  doc.pass = pass;
+		  doc.save();
 
-		}
+		  req.session.accessToken = doc.accessToken;
+		  req.session.userId = doc.userId;
 
-	    var temp_path = req.files.upload.path;
-	    var save_path = './public/QIF/' + req.files.upload.name;
-	     
-	    fs.rename(temp_path, save_path, function(error){
-	     	if(error) throw error;
-	     	
-	     	fs.unlink(temp_path, function(){
-	     		if(error) throw error;
-	     	});
-	     	
-	    });        
-
-	    var account = [];
-
-		csv()
-		.from.path(save_path)
-		.on('record', function(data, index){
-		    var object = {};
-
-		    
-		    object['date'] = data[1];
-		    object['amount'] = data[3];
-
-		    account.push(object);
-		})
-		.on('end', function(count, data){
-		    console.log('Number of lines: '+ count);
-		    console.log(account);
-		})
-		.on('error', function(error){
-		    console.log(error.message);
 		});
-
-
-		
-		res.render('account', {accounts: account});
 	});
 
 }
+
+
+
+

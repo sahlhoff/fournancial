@@ -20,3 +20,13 @@ a {
 	padding-bottom: 40px;
 }
 
+.logbar {
+	top:0;
+	position: absolute;
+	right:0;
+	padding-right: 25px;
+}
+
+.floatbottom {
+	bottom:0;
+}

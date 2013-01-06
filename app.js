@@ -5,7 +5,10 @@ var express = require('express')
   , mongoose = require('mongoose')
   , User = require('./models/user')
   , util = require('util')
-  , FoursquareStrategy = require('passport-foursquare').Strategy;
+  , FoursquareStrategy = require('passport-foursquare').Strategy
+  , expressLayouts = require('express-ejs-layouts')
+  , LocalStrategy = require('passport-local').Strategy;
+
 
 var FOURSQUARE_CLIENT_ID = config.secrets.clientId
 var FOURSQUARE_CLIENT_SECRET = config.secrets.clientSecret;
@@ -69,6 +72,19 @@ passport.use(new FoursquareStrategy({
 ));
 
 
+passport.use(new LocalStrategy(
+  function(username, password, done) {
+    User.findOne({ handle: username, pass: password }, function (err, user) {
+      if (err) { return done(err); }
+      if (!user) {
+        return done(null, false, { message: 'Incorrect username.' });
+      }
+      return done(null, user.userId);
+    });
+  }
+));
+
+
 
 
 var app = express();
@@ -78,6 +94,7 @@ app.configure(function() {
   app.set('port', process.env.PORT || 5000);
   app.set('views', __dirname + '/views');
   app.set('view engine', 'ejs');
+  app.set('layout', 'layout');
   app.use(express.logger());
   app.use(express.cookieParser());
   app.use(express.bodyParser());
@@ -87,6 +104,7 @@ app.configure(function() {
   // persistent login sessions (recommended).
   app.use(passport.initialize());
   app.use(passport.session());
+  app.use(expressLayouts);
   app.use(app.router);
   app.use(express.static(__dirname + '/public'));
 });
@@ -102,7 +120,10 @@ app.configure('production', function(){
 
 
 // Connect mongoose
-mongoose.connect('mongodb://sahlhoff:your1mom1goes1to1college@ds047197.mongolab.com:47197/heroku_app10685372');
+//mongoose.connect('mongodb://sahlhoff:your1mom1goes1to1college@ds047197.mongolab.com:47197/heroku_app10685372');
+mongoose.connect('mongodb://localhost/fournancial');
+
+
 
 // Setup routes
 require('./routes')(app);
