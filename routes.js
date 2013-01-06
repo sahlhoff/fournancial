@@ -3,7 +3,7 @@ var passport = require('passport')
 	, fs = require('fs')
 	, User = require('./models/user')
 	, config = require('./config')
-	, account = require('./models/account');
+	, Account = require('./models/account');
 
 
 	var config = {
@@ -26,12 +26,18 @@ module.exports = function (app) {
 	}
 
 	function updateAccount(req, res, next){
+		var userId, accessToken;
 
-		console.log('in update')
-		console.log(req.session)
+		userId = req.session.userId;
+		accessToken = req.session.accessToken;
 
-
-		res.redirect('/account');
+		Account.findOne({userId: userId}, function(err, doc) {
+			if(err){console.log(err)}
+			if(doc){
+				console.log(doc);
+			}
+		})
+		
 		/*
 		var accessToken, userId;
 
@@ -55,6 +61,7 @@ module.exports = function (app) {
 		});
 		
 		*/	
+		res.redirect('/account');
 	}
 
 
@@ -167,7 +174,12 @@ module.exports = function (app) {
 		  req.session.accessToken = doc.accessToken;
 		  req.session.userId = doc.userId;
 
+
+
 		});
+
+		updateAccount(req, res);
+
 	});
 
 }
