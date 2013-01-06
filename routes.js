@@ -1,6 +1,5 @@
 var passport = require('passport');
-var banking = require('banking');
-var qif2json = require('qif2json');
+var csv = require('csv');
 var fs = require('fs');
 
 /*
@@ -79,8 +78,11 @@ module.exports = function (app) {
 		res.render('create', {user: req.user})
 	});
 
+
 	app.post('/create',  function (req, res) {
+
 		user = req.body
+
 
 		var myUser = {
 			  user: user.handle
@@ -89,15 +91,42 @@ module.exports = function (app) {
 
 		}
 
+	    var temp_path = req.files.upload.path;
+	    var save_path = './public/QIF/' + req.files.upload.name;
+	     
+	    fs.rename(temp_path, save_path, function(error){
+	     	if(error) throw error;
+	     	
+	     	fs.unlink(temp_path, function(){
+	     		if(error) throw error;
+	     	});
+	     	
+	    });        
 
+	    var account = [];
 
-		qif2json.parseFile(__dirname + req.files.QIF.path, function(err, data){
-			if(err) console.log('err in this\n\n' + err + '\n\n')	
-			console.log(data)
-		});				
+		csv()
+		.from.path(save_path)
+		.on('record', function(data, index){
+		    var object = {};
+
+		    
+		    object['date'] = data[1];
+		    object['amount'] = data[3];
+
+		    account.push(object);
+		})
+		.on('end', function(count, data){
+		    console.log('Number of lines: '+ count);
+		    console.log(account);
+		})
+		.on('error', function(error){
+		    console.log(error.message);
+		});
+
 
 		
-		res.render('account', {user: myUser});
+		res.render('account', {accounts: account});
 	});
 
 }

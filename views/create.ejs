@@ -26,7 +26,7 @@
 	</div>
 	<div class = "row">
 		<div class = "span8 offset2">
- 			<form action="" class="form-horizonatal well extrapaddingbottom" method="POST" id="account-form-signup">
+ 			<form action="/create" class="form-horizonatal well extrapaddingbottom" method="post" enctype="multipart/form-data" id="account-form-signup">
  			<legend><h4>Sign up to save mad cash!</h4></legend>
             <div class = "row">
             	<p class="help-block bankinfo" style="padding-left:20px;">Use the same credentials as you do for online banking</p>
@@ -63,7 +63,7 @@
 
 
           	<label>Choose QIF File</label>
-            <input id="fileupload" type="file" name="QIF">
+            <input type="file" name="upload" multiple="multiple">
            
         
         	<div class ="span2 offset6 extrapaddingbottom">
@@ -84,16 +84,6 @@
             });
 
 
-		$(function () {
-		    $('#fileupload').fileupload({
-		        dataType: 'QIF',
-		        done: function (e, data) {
-		            $.each(data.result.files, function (index, file) {
-		                $('<p/>').text(file.name).appendTo(document.body);
-		            });
-		        }
-		    });
-		});
 
 	    </script>
 </html>
