@@ -45,7 +45,6 @@ module.exports = function (app) {
 		userId = req.session.userId;
 		accessToken = req.session.accessToken;
 
-		console.log('in get all')
 		foursquare.Users.getCheckins(userId, null, accessToken, function(err, data) {
 				if(err){console.log(err)}
 				else {
@@ -96,7 +95,6 @@ module.exports = function (app) {
 						Account.findOne({checkinId : objectId }, function(err, existingAccount) {
 				            if(existingAccount === null) {
 				            	console.log('existingAccount ' + existingAccount + ' shit')
-				            		console.log
 					            	account = new Account(account);
 					            	account.save(function(err) {
 										if(err){
@@ -152,7 +150,6 @@ module.exports = function (app) {
 
 
 	app.post('/save', function(req, res) {
-	  console.log(JSON.stringify(req.body, null, 2));
 
 	  Account.update({checkinId:req.body.checkinId}, {$inc: { spent: req.body.value }}, {upsert: true}, function(err){
 	  	if(err){console.log(err)}
@@ -165,7 +162,7 @@ module.exports = function (app) {
 				userQuery.exec(function(err, user) {
 
 					res.contentType('json');
-					console.log(user[0].balance)
+
 	  				res.send({ balance: user[0].balance});
 
 				});
@@ -293,7 +290,7 @@ module.exports = function (app) {
 
 
 	app.post('/create', function (req, res) {
-		console.log(req);
+
 
 		var handle, password;
 
