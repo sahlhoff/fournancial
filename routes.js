@@ -110,45 +110,6 @@ module.exports = function (app) {
 
 
 
-	function apdateAccount(req, res, next){
-		var userId, accessToken;
-
-		userId = req.session.userId;
-		accessToken = req.session.accessToken;
-
-		Account.findOne({userId: userId}, function(err, doc) {
-			if(err){console.log(err)}
-			else{
-				getAll(userId, accessToken, function(err, data) {
-					console.log(data)
-				})
-			}
-		})
-		
-		/*
-		var accessToken, userId;
-
-		User.findOne({ userId: user}, function (err, doc){
-			if(err){console.log(err)}
-			if(doc){
-				accessToken = doc.accessToken;
-				req.session.accessToken = accessToken;
-			}
-
-			console.log(req.session);
-
-
-			
-
-		});
-		
-		*/	
-		res.redirect('/account');
-	}
-
-
-
-
 /*========================= Account ==========================*/
 
 
@@ -165,8 +126,16 @@ module.exports = function (app) {
 
 	app.get('/account', ensureAuthenticated, function (req, res){
 
-		
-		res.render('account', { layout: 'layout' })
+
+		var userId = req.session.userId;
+		Account.find({userId: userId}.limit(20), function(err, doc) {
+			if(err){console.log(err)}
+			res.render('account', { 
+									layout: 'layout'
+									, account: doc 
+								});
+		})
+	
 	});
 
 

@@ -9,7 +9,11 @@
      <ul>
     </div>
     <div class="span10">
-      <!--Body content-->
+      <ul>
+		<% for(var i=0; i<account.length; i++) {%>
+		   <li><%= account[i] %></li>
+		<% } %>
+		</ul>
     </div>
   </div>
 </div>
