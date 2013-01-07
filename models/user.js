@@ -6,7 +6,8 @@ var userSchema = new Schema({
     userId: String,
     accessToken : String,
    	handle : String,
-   	pass : String
+   	pass : String,
+   	balance : {type: Number, default:0}
 }, { collection: 'User' });
 
 

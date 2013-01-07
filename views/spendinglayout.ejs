@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<title>Passport-Foursquare Example</title>
+	<link rel='stylesheet' href='/stylesheets/bootstrap.min.css'/>
+    <link rel='stylesheet' href='/stylesheets/style.css'/>
+ 	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+	<script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+
+      	<% 
+
+
+      	var venues = [];
+
+      	for(i=0; i < account.length; i++) {
+      		var place =[];
+      		if(account[i].spent > 0){
+ 
+      			var venue = account[i].venueName;
+      			venue.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+      			var money = account[i].spent;
+      			place.push(venue, money)
+      			venues.push(place)
+      			}
+
+      		}
+
+      	for(i=0;i<venues.length;i++){
+      		var row = venues[i]
+      		console.log(row[0])
+      	}	
+
+
+      	%>
+
+
+        var data = google.visualization.arrayToDataTable([
+          ['Place', 'Ammount Spent'],
+          <% for(i=0;i<venues.length;i++){ var row=venues[i]%>
+          ["<%=row[0]%>",     <%=row[1]%>],
+     	<%}%>
+        ]);
+
+        var options = {
+          title: 'My Expenses'
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+      }
+    </script>
+	</head>
+	<body>
+	 <div class="navbar navbar-fixed-top">
+   <div class="navbar-inner">
+     <div class="container">
+       <a class="brand" href="../">Fournancial</a>
+       <div class="nav-collapse" id="main-menu">
+        <div class="nav pull-right" id="main-menu-right">
+        	<a href="/logout"><h5>Logout</h5></a>
+        </div>
+       </div>
+     </div>
+   </div>
+ </div>
+	<%-body%>
+	</body>
+</html>
+

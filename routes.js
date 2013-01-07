@@ -34,6 +34,11 @@ module.exports = function (app) {
 	  res.redirect('/')
 	}
 
+	function ToLocalDate (inDate) {
+	    var date = new Date();
+	    date.setTime(inDate.valueOf() - 60000 * inDate.getTimezoneOffset());
+	    return date;
+	}
 
 	function updateAccount(req, res) {
 		var userId, accessToken;
@@ -62,17 +67,21 @@ module.exports = function (app) {
 							category[e] = objectCategory.name;
 						}
 
+						var d = new Date(0); 
+						d.setUTCSeconds(object.createdAt);
+
 						account.checkinId = object.id;
 						account.userId = userId;
+						account.date = d;
 						account.menu = object.venue.menu;
 						account.createdAt = object.createdAt;
 						account.timeZoneOffset = object.timeZoneOffset;
 						account.venueId = object.id;
 						account.venueName = object.venue.name;
 						account.lat = object.venue.location.lat;
-						account.lng = object.venue.location.lngr;
+						account.lng = object.venue.location.lng;
 						account.category = category;
-		            	
+
 		            	myAccount = new Account(account);
 
 		            	myAccount.save(function(err) {
@@ -104,6 +113,8 @@ module.exports = function (app) {
 				}
 
 			});
+
+
 	res.redirect('/account');
 	}
 
@@ -120,25 +131,99 @@ module.exports = function (app) {
 
 
 
-
-
-
-
 	app.get('/account', ensureAuthenticated, function (req, res){
-
+		account = [];
 
 		var userId = req.session.userId;
-		Account.find({userId: userId}.limit(20), function(err, doc) {
-			if(err){console.log(err)}
-			res.render('account', { 
-									layout: 'layout'
-									, account: doc 
-								});
-		})
+		
+		var query = Account.find({userId:userId});
+		query.exec(function(error, docs){
+
+			var userQuery = User.find({userId:userId});
+				userQuery.exec(function(err, user) {
+
+					res.render('account', {account: docs, user: user, balance: user[0].balance})
+
+				});
+		});
+
 	
 	});
 
 
+	app.post('/save', function(req, res) {
+	  console.log(JSON.stringify(req.body, null, 2));
+
+	  Account.update({checkinId:req.body.checkinId}, {$inc: { spent: req.body.value }}, {upsert: true}, function(err){
+	  	if(err){console.log(err)}
+	  })
+
+	  User.update({userId:req.session.userId}, {$inc: { balance: req.body.value }}, {upsert: true}, function(err){
+	  	if(err){console.log(err)}
+	  
+	  		var userQuery = User.find({userId:req.session.userId});
+				userQuery.exec(function(err, user) {
+
+					res.contentType('json');
+					console.log(user[0].balance)
+	  				res.send({ balance: user[0].balance});
+
+				});
+
+	  })
+	  
+
+	  
+
+	  	});
+
+/*=========================== Map ===============================*/
+
+	app.get('/map', ensureAuthenticated, function (req, res){
+		account = [];
+
+		var userId = req.session.userId;
+		
+		var query = Account.find({userId:userId});
+		query.exec(function(error, docs){
+
+			var userQuery = User.find({userId:userId});
+				userQuery.exec(function(err, user) {
+
+					res.render('map', {account: docs, user: user, layout: 'maplayout'})
+
+				});
+		});
+
+	
+	});
+
+
+
+/*=========================== spending ===============================*/
+
+
+
+
+	app.get('/spending', ensureAuthenticated, function (req, res){
+		account = [];
+		var category;
+
+		var userId = req.session.userId;
+		
+		var query = Account.find({userId:userId});
+		query.exec(function(error, docs){
+
+			var userQuery = User.find({userId:userId});
+				userQuery.exec(function(err, user) {
+
+					res.render('spending', {account: docs, user: user, layout: 'spendinglayout'})
+
+				});
+		});
+
+	
+	});
 
 
 
@@ -201,7 +286,8 @@ module.exports = function (app) {
 
 	app.get('/create', ensureAuthenticated, function (req, res) {
 		res.render('create', {
-								  user: req.user
+								  user: req.user,
+								  layout: 'createlayout'
 							})
 	});
 
