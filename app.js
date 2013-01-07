@@ -42,7 +42,7 @@ passport.use(new FoursquareStrategy({
   function(accessToken, refreshToken, profile, done) {
     var userId = profile.id;
     // asynchronous verification, for effect...
-      
+        process.nextTick(function () {
           User.findOne({userId : userId }, function(err, existingUser) {
             if (err || existingUser) {
                 console.log('UserId ' + userId + ' exists')
@@ -66,6 +66,7 @@ passport.use(new FoursquareStrategy({
                 //res.redirect('/index');
             });
           }); 
+             });
       return done(null, profile);
 
   }

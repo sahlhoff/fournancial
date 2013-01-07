@@ -20,12 +20,97 @@ var foursquare = require('node-foursquare')(config);
 
 module.exports = function (app) {
 
+
+
+
+
+
+
+/*=========================== helpers=============================*/
+
+
 	function ensureAuthenticated(req, res, next) {
 	  if (req.isAuthenticated()) { return next(); }
 	  res.redirect('/')
 	}
 
-	function updateAccount(req, res, next){
+
+	function updateAccount(req, res) {
+		var userId, accessToken;
+		userId = req.session.userId;
+		accessToken = req.session.accessToken;
+
+		console.log('in get all')
+		foursquare.Users.getCheckins(userId, null, accessToken, function(err, data) {
+				if(err){console.log(err)}
+				else {
+					items = data.checkins.items;
+					for (i in items){	
+						var object, categories, objectCategory, objectId, mgmt;
+						var category = [];
+						var account = {};
+
+
+		            	object = items[i];
+
+
+		                categories = object.venue.categories;
+
+						category = [];
+						for(e in categories){
+							objectCategory = categories[e];
+							category[e] = objectCategory.name;
+						}
+
+						account.checkinId = object.id;
+						account.userId = userId;
+						account.menu = object.venue.menu;
+						account.createdAt = object.createdAt;
+						account.timeZoneOffset = object.timeZoneOffset;
+						account.venueId = object.id;
+						account.venueName = object.venue.name;
+						account.lat = object.venue.location.lat;
+						account.lng = object.venue.location.lngr;
+						account.category = category;
+		            	
+		            	myAccount = new Account(account);
+
+		            	myAccount.save(function(err) {
+							if(err){
+								console.log(err)
+							}
+						})
+
+		            	objectId = account.id
+
+
+						Account.findOne({checkinId : objectId }, function(err, existingAccount) {
+				            if(existingAccount === null) {
+				            	console.log('existingAccount ' + existingAccount + ' shit')
+				            		console.log
+					            	account = new Account(account);
+					            	account.save(function(err) {
+										if(err){
+											console.log(err)
+										}
+									})
+					            
+							}
+					
+						});
+
+
+					}	
+				}
+
+			});
+	res.redirect('/account');
+	}
+
+
+
+
+	function apdateAccount(req, res, next){
 		var userId, accessToken;
 
 		userId = req.session.userId;
@@ -33,8 +118,10 @@ module.exports = function (app) {
 
 		Account.findOne({userId: userId}, function(err, doc) {
 			if(err){console.log(err)}
-			if(doc){
-				console.log(doc);
+			else{
+				getAll(userId, accessToken, function(err, data) {
+					console.log(data)
+				})
 			}
 		})
 		
@@ -51,12 +138,7 @@ module.exports = function (app) {
 			console.log(req.session);
 
 
-			foursquare.Users.getCheckins(user, null, accessToken, function(err, data) {
-				if(err){console.log(err)}
-				else {
-				return(data);
-			}
-			});
+			
 
 		});
 		
@@ -83,8 +165,6 @@ module.exports = function (app) {
 
 	app.get('/account', ensureAuthenticated, function (req, res){
 
-		
-		console.log(req.session)
 		
 		res.render('account', { layout: 'layout' })
 	});
