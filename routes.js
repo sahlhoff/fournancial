@@ -100,6 +100,7 @@ module.exports = function (app) {
 										if(err){
 											console.log(err)
 										}
+											res.redirect('/account');
 									})
 					            
 							}
@@ -112,8 +113,6 @@ module.exports = function (app) {
 
 			});
 
-
-	res.redirect('/account');
 	}
 
 
