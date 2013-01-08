@@ -232,9 +232,11 @@ module.exports = function (app) {
 				accessToken = doc.accessToken;
 				req.session.accessToken = accessToken;
 				req.session.userId = req.user;
+
+				updateAccount(req, res);
 			}
 
-			updateAccount(req, res);
+			
 		});
 	});
 
@@ -292,11 +294,12 @@ module.exports = function (app) {
 		  req.session.accessToken = doc.accessToken;
 		  req.session.userId = doc.userId;
 
+		  updateAccount(req, res);
 
 
 		});
 
-		updateAccount(req, res);
+		
 
 	});
 
