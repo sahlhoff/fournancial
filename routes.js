@@ -87,14 +87,13 @@ module.exports = function (app) {
 							if(err){
 								console.log(err)
 							}
-
-							console.log('in account')
-
-							res.redirect('/account');
+							
 						})
 
 		            	
 					}	
+
+					res.redirect('/account');
 				}
 
 
