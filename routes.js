@@ -87,27 +87,11 @@ module.exports = function (app) {
 							if(err){
 								console.log(err)
 							}
+
+							res.redirect('/account');
 						})
 
-		            	objectId = account.id
-
-
-						Account.findOne({checkinId : objectId }, function(err, existingAccount) {
-				            if(existingAccount === null) {
-				            	console.log('existingAccount ' + existingAccount + ' shit')
-					            	account = new Account(account);
-					            	account.save(function(err) {
-										if(err){
-											console.log(err)
-										}
-											res.redirect('/account');
-									})
-					            
-							}
-					
-						});
-
-
+		            	
 					}	
 				}
 
