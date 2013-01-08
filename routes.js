@@ -88,12 +88,16 @@ module.exports = function (app) {
 								console.log(err)
 							}
 
+							console.log('in account')
+
 							res.redirect('/account');
 						})
 
 		            	
 					}	
 				}
+
+
 
 			});
 
