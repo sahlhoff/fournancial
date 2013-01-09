@@ -121,7 +121,7 @@ app.configure('production', function(){
 
 
 // Connect mongoose
-mongoose.connect('mongodb://sahlhoff:your1mom1goes1to1college@ds047197.mongolab.com:47197/heroku_app10685372');
+mongoose.connect('mongodb://localhost/fournancial');
 
 
 // Setup routes
